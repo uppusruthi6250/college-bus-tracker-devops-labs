@@ -1,0 +1,49 @@
+﻿[36mvite v5.4.21 [32mbuilding for production...[36m[39m
+transforming...
+[32mΓ£ô[39m 133 modules transformed.
+node.exe : [31mx[39m 
+Build failed in 6.68s
+At line:1 char:1
++ & "C:\Program 
+Files\nodejs/node.exe" 
+"C:\Program 
+Files\nodejs/node_mo ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~
+    + CategoryInfo          
+    : NotSpecified: ([31m  
+  x[39m Build failed in    
+ 6.68s:String) [], Remot    
+eException
+    + FullyQualifiedErrorId 
+    : NativeCommandError
+ 
+[31merror during build:
+[31mENOTDIR: not a 
+directory, scandir 'C:\proje
+ct-self-1\real-time-bustrack
+er\frontend\dist'[31m
+    at Object.readdirSync 
+(node:fs:1583:26)
+    at emptyDir (file:///C:/
+project-self-1/real-time-bus
+tracker/frontend/node_module
+s/vite/dist/node/chunks/dep-
+BK3b2jBa.js:17075:34)
+    at prepareOutDir (file:/
+//C:/project-self-1/real-tim
+e-bustracker/frontend/node_m
+odules/vite/dist/node/chunks
+/dep-BK3b2jBa.js:65746:7)
+    at build (file:///C:/pro
+ject-self-1/real-time-bustra
+cker/frontend/node_modules/v
+ite/dist/node/chunks/dep-BK3
+b2jBa.js:65711:7)
+    at async 
+CAC.<anonymous> (file:///C:/
+project-self-1/real-time-bus
+tracker/frontend/node_module
+s/vite/dist/node/cli.js:829:
+5)[39m

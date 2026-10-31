@@ -1,0 +1,16 @@
+.git
+.gitignore
+.env
+.env.*
+**/.env
+**/.env.*
+**/node_modules
+**/dist
+**/build
+**/*.db
+**/*.db-shm
+**/*.db-wal
+**/*.backup.db
+**/coverage
+**/.DS_Store
+**/Thumbs.db

@@ -1,0 +1,89 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: bus-tracker-backend
+  namespace: bus-tracker
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: bus-tracker-backend
+  template:
+    metadata:
+      labels:
+        app: bus-tracker-backend
+    spec:
+      securityContext:
+        fsGroup: 1000
+      initContainers:
+        - name: initialize-sqlite-schema
+          image: college-bus-tracker-backend:local
+          imagePullPolicy: IfNotPresent
+          command: ["npm", "--prefix", "backend", "run", "init-db"]
+          env:
+            - name: DB_PATH
+              value: /data/bus_tracker.db
+          volumeMounts:
+            - name: sqlite-data
+              mountPath: /data
+      containers:
+        - name: backend
+          image: college-bus-tracker-backend:local
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: http
+              containerPort: 5000
+          env:
+            - name: NODE_ENV
+              value: production
+            - name: PORT
+              value: "5000"
+            - name: DB_PATH
+              value: /data/bus_tracker.db
+            - name: JWT_EXPIRES_IN
+              value: 7d
+            - name: JWT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: bus-tracker-secrets
+                  key: JWT_SECRET
+          volumeMounts:
+            - name: sqlite-data
+              mountPath: /data
+          readinessProbe:
+            httpGet:
+              path: /api/health
+              port: http
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /api/health
+              port: http
+            initialDelaySeconds: 15
+            periodSeconds: 20
+          resources:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+            limits:
+              cpu: 500m
+              memory: 512Mi
+      volumes:
+        - name: sqlite-data
+          persistentVolumeClaim:
+            claimName: bus-tracker-sqlite
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: backend
+  namespace: bus-tracker
+spec:
+  selector:
+    app: bus-tracker-backend
+  ports:
+    - name: http
+      port: 5000
+      targetPort: http
+  type: ClusterIP

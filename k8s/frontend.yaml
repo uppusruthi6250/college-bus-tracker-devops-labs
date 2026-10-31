@@ -1,0 +1,56 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: bus-tracker-frontend
+  namespace: bus-tracker
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: bus-tracker-frontend
+  template:
+    metadata:
+      labels:
+        app: bus-tracker-frontend
+    spec:
+      containers:
+        - name: frontend
+          image: college-bus-tracker-frontend:local
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: http
+              containerPort: 80
+          readinessProbe:
+            httpGet:
+              path: /
+              port: http
+            initialDelaySeconds: 3
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /
+              port: http
+            initialDelaySeconds: 10
+            periodSeconds: 20
+          resources:
+            requests:
+              cpu: 50m
+              memory: 64Mi
+            limits:
+              cpu: 250m
+              memory: 256Mi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: frontend
+  namespace: bus-tracker
+spec:
+  selector:
+    app: bus-tracker-frontend
+  ports:
+    - name: http
+      port: 80
+      targetPort: http
+      nodePort: 30080
+  type: NodePort

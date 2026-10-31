@@ -1,0 +1,19 @@
+FROM node:20-bookworm-slim
+
+WORKDIR /app
+
+COPY backend/package*.json ./backend/
+RUN npm --prefix backend ci --omit=dev
+
+COPY backend ./backend
+
+ENV NODE_ENV=production
+ENV PORT=5000
+ENV DB_PATH=/data/bus_tracker.db
+
+RUN mkdir -p /data && chown -R node:node /app /data
+
+USER node
+EXPOSE 5000
+
+CMD ["node", "backend/server.js"]
