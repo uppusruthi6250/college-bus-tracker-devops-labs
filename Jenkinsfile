@@ -27,22 +27,34 @@ pipeline {
             }
         }
 
-        stage('Build Backend Docker Image') {
+        // Build backend image with development dependencies for testing
+        stage('Build Backend Test Image') {
             steps {
                 bat '''
-                    docker build -f Dockerfile.backend -t %BACKEND_IMAGE%:build .
+                    docker build --target test -f Dockerfile.backend -t %BACKEND_IMAGE%:test .
                 '''
             }
         }
 
+        // Run backend integration tests
         stage('Backend Integration Tests') {
             steps {
                 bat '''
-                    docker run --rm %BACKEND_IMAGE%:build npm --prefix backend test
+                    docker run --rm %BACKEND_IMAGE%:test
                 '''
             }
         }
 
+        // Build production backend image
+        stage('Build Backend Docker Image') {
+            steps {
+                bat '''
+                    docker build --target production -f Dockerfile.backend -t %BACKEND_IMAGE%:build .
+                '''
+            }
+        }
+
+        // Build frontend image
         stage('Build Frontend Docker Image') {
             steps {
                 bat '''
@@ -51,6 +63,7 @@ pipeline {
             }
         }
 
+        // Push backend and frontend images to Docker Hub
         stage('Push Images to Docker Hub') {
             steps {
                 withCredentials([
@@ -81,6 +94,7 @@ pipeline {
             }
         }
 
+        // Deploy application to Kubernetes
         stage('Deploy to Kubernetes') {
             steps {
                 withCredentials([
@@ -130,6 +144,7 @@ pipeline {
             }
         }
 
+        // Verify Kubernetes deployment
         stage('Verify Kubernetes Deployment') {
             steps {
                 bat 'kubectl get deployments -n bus-tracker'
